@@ -1,62 +1,69 @@
 #!/usr/bin/python3
-"""
-nqueens backtracking program to print the coordinates of n queens
-on an nxn grid such that they are all in non-attacking positions
-"""
 
 
-from sys import argv
+import sys
 
-if __name__ == "__main__":
-    a = []
-    if len(argv) != 2:
-        print("Usage: nqueens N")
-        exit(1)
-    if argv[1].isdigit() is False:
-        print("N must be a number")
-        exit(1)
-    n = int(argv[1])
-    if n < 4:
-        print("N must be at least 4")
-        exit(1)
 
-    # initialize the answer list
-    for i in range(n):
-        a.append([i, None])
+def printBoard(board):
+    if any(1 in x for x in board):
+        print([[idx, board[idx].index(1)] for idx, val in enumerate(board)])
 
-    def already_exists(y):
-        """check that a queen does not already exist in that y value"""
-        for x in range(n):
-            if y == a[x][1]:
-                return True
+
+def isSafe(row, square, chessboard, N, diag):
+    if chessboard[row][square]:
         return False
-
-    def reject(x, y):
-        """determines whether or not to reject the solution"""
-        if (already_exists(y)):
-            return False
-        i = 0
-        while(i < x):
-            if abs(a[i][1] - y) == abs(i - x):
-                return False
-            i += 1
+    if square - diag >= 0 and chessboard[row][square - diag]:
+        return False
+    if square + diag < (N) and chessboard[row][square + diag]:
+        return False
+    if row == 0:
         return True
+    return isSafe(row - 1, square, chessboard, N, diag + 1)
 
-    def clear_a(x):
-        """clears the answers from the point of failure on"""
-        for i in range(x, n):
-            a[i][1] = None
 
-    def nqueens(x):
-        """recursive backtracking function to find the solution"""
-        for y in range(n):
-            clear_a(x)
-            if reject(x, y):
-                a[x][1] = y
-                if (x == n - 1):  # accepts the solution
-                    print(a)
-                else:
-                    nqueens(x + 1)  # moves on to next x value to continue
+def placeSquare(row, position, chessboard, N):
+    for square in range(position, N):
+        if 1 in chessboard[row]:
+            return 0
+        if not isSafe(row - 1, square, chessboard, N, 1):
+            continue
+        chessboard[row][square] = 1
+        return
+    return 1
 
-    # start the recursive process at x = 0
-    nqueens(0)
+if len(sys.argv) != 2:
+    print("Usage: nqueens N")
+    sys.exit(1)
+
+N = sys.argv[1]
+
+if not str.isdigit(N):
+    print("N must be a number")
+    sys.exit(1)
+
+N = int(N)
+
+if N < 4:
+    print("N must be at least 4")
+    sys.exit(1)
+
+queen = 0
+
+while queen != N:
+    chessboard = [[0 for x in range(N)] for x in range(N)]
+    chessboard[0][queen] = 1
+    position = 0
+    row = 1
+    while row < N:
+        if placeSquare(row, position, chessboard, N):
+            row -= 1
+            position = chessboard[row].index(1)
+            chessboard[row][position] = 0
+            position += 1
+            if not row:
+                break
+        else:
+            row += 1
+            position = 0
+    printBoard(chessboard)
+    queen += 1
