@@ -1,42 +1,49 @@
 #!/usr/bin/python3
 """
-Module for log parsing scripts.
+Script reads stdin line by line and computes metrics
+
+Input format:
+<IP Address> - [<date>] "GET /projects/260 HTTP/1.1" <status code> <file size>
+
+Each 10 lines and after a keyboard interruption (CTRL + C),
+prints those statistics since the beginning:
+total file size and
+possible status code: 200, 301, 400, 401, 403, 404, 405 and 500
+
+format: File size: <total size>
+format: <status code (in ascending order)>: <number>
 """
 
 
 import sys
 
 
-if __name__ == "__main__":
-    size = [0]
-    codes = {200: 0, 301: 0, 400: 0, 401: 0, 403: 0, 404: 0, 405: 0, 500: 0}
+def print_size_and_codes(size, stat_codes):
+    print("File size: {:d}".format(size))
+    for k, v in sorted(stat_codes.items()):
+        if v:
+            print("{:s}: {:d}".format(k, v))
 
-    def check_match(line):
-        '''Checks for regexp match in line.'''
-        try:
-            line = line[:-1]
-            words = line.split(" ")
-            size[0] += int(words[-1])
-            code = int(words[-2])
-            if code in codes:
-                codes[code] += 1
-        except:
-            pass
 
-    def print_stats():
-        '''Prints accumulated statistics.'''
-        print("File size: {}".format(size[0]))
-        for k in sorted(codes.keys()):
-            if codes[k]:
-                print("{}: {}".format(k, codes[k]))
-    i = 1
+def parse_stdin_and_compute():
+    size = 0
+    lines = 0
+    stat_codes = {"200": 0, "301": 0, "400": 0, "401": 0,
+                  "403": 0, "404": 0, "405": 0, "500": 0}
     try:
         for line in sys.stdin:
-            check_match(line)
-            if i % 10 == 0:
-                print_stats()
-            i += 1
+            fields = list(map(str, line.strip().split(" ")))
+            size += int(fields[-1])
+            if fields[-2] in stat_codes:
+                stat_codes[fields[-2]] += 1
+            lines += 1
+            if lines % 10 == 0:
+                print_size_and_codes(size, stat_codes)
     except KeyboardInterrupt:
-        print_stats()
+        print_size_and_codes(size, stat_codes)
         raise
-    print_stats()
+
+    print_size_and_codes(size, stat_codes)
+
+
+parse_stdin_and_compute()
