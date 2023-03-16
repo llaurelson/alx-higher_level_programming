@@ -30,7 +30,7 @@ scripting. The specific list of projects contained follows:
 
 ## Author :
 
-* **Tolulope Fakunle** <[Tolulope05](https://github.com/Tolulope05)>
+* **Lawrence Okoeguale** <[llaurelson](https://github.com/llaurelson)>
 
 ## Acknowledgements :pray:
 
