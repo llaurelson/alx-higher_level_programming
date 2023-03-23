@@ -10,9 +10,9 @@ class Rectangle {
 
       this.height = h;
 
-    }
+    };
 
-  }
+  };
 
   print () {
 
@@ -24,13 +24,13 @@ class Rectangle {
 
         s += 'X';
 
-      }
+      };
 
       console.log(s);
 
-    }
+    };
 
-  }
+  };
 
   rotate () {
 
@@ -40,7 +40,7 @@ class Rectangle {
 
     this.height = aux;
 
-  }
+  };
 
   double () {
 
@@ -48,8 +48,8 @@ class Rectangle {
 
     this.height *= 2;
 
-  }
+  };
 
-}
+};
 
 module.exports = Rectangle;
